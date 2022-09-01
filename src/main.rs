@@ -1,18 +1,35 @@
-#![no_std] // don't link the Rust standard library
-#![no_main] // disable all Rust-level entry points
+#![no_std]
+#![no_main]
+//the CTF gens a test_runner as alias of main function
+//however, as no_main, this will be ignore
+//thus, we rename our main as test_main
+#![feature(custom_test_frameworks)]
+#![test_runner(blog_os::test_runner)]
+#![reexport_test_harness_main = "test_main"]
 
-mod vga_buffer;
+use blog_os::println;
 use core::panic::PanicInfo;
-
-/// This function is called on panic.
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    loop {}
-}
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    //VGA buffer is in 0xb8000
-    vga_buffer::print_something();
+    println!("Hello World{}", "!");
+
+    #[cfg(test)]
+    test_main();
+
     loop {}
+}
+
+/// This function is called on panic.
+#[cfg(not(test))]
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    println!("{}", info);
+    loop {}
+}
+
+#[cfg(test)]
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    blog_os::test_panic_handler(info)
 }
