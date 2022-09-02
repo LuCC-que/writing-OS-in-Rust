@@ -1,7 +1,9 @@
+// in tests/basic_boot.rs
+
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)]
-#![test_runner(blog_os::test_runner)]
+#![test_runner(blog_os::test_runner)] //use the test runner from blog_os
 #![reexport_test_harness_main = "test_main"]
 
 use blog_os::println;
@@ -14,14 +16,9 @@ pub extern "C" fn _start() -> ! {
     loop {}
 }
 
-fn test_runner(tests: &[&dyn Fn()]) {
-    unimplemented!();
-}
-
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    // blog_os::test_panic_handler(info)
-    loop {}
+    blog_os::test_panic_handler(info);
 }
 
 #[test_case]
