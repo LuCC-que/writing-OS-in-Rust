@@ -1,5 +1,5 @@
 /**
- * qemu redirects the uart to the standard output
+ * qemu redirects the UART to the standard output
  */
 use lazy_static::lazy_static;
 use spin::Mutex;

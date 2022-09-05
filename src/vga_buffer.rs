@@ -92,6 +92,7 @@ impl Writer {
 
     fn new_line(&mut self) {
         //move the current line, 1 line up
+        //move the whole screen, even the empty slot
         for row in 1..BUFFER_HEIGHT {
             for col in 0..BUFFER_WIDTH {
                 let character = self.buffer.chars[row][col].read();
@@ -99,7 +100,8 @@ impl Writer {
             }
         }
 
-        self.clear_row(BUFFER_HEIGHT - 1); //clean off the last row
+        //clean off the last row, this is the repeating row
+        self.clear_row(BUFFER_HEIGHT - 1);
         self.column_position = 0;
     }
 
@@ -127,7 +129,14 @@ lazy_static! {
     column_position: 0,
     //not a constant can't be put to the constant pool
     color_code: ColorCode::new(Color::Yellow, Color::Black),
+    //forcefully lay the buffer into this address
+    /*
+        |           |
+        | vga buffer| 0xb8000
+        |           |
+    */
     buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+
   });
 
 }
